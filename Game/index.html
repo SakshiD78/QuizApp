@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Snake Water Gun Game</title>
+<style>
+  /* Reset and base */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0; padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+    color: #2c3e50;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  #game-container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    width: 350px;
+    max-width: 95vw;
+    height: 600px;
+    max-height: 95vh;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  }
+  header {
+    text-align: center;
+  }
+  header h1 {
+    margin-bottom: 5px;
+    font-weight: 700;
+    font-size: 2.3rem;
+    color: #34495e;
+    text-shadow: 1px 1px 2px #9b59b6;
+  }
+  header p {
+    font-size: 1rem;
+    color: #7f8c8d;
+    margin-top: 0;
+  }
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .choices {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+  }
+  button.choice-btn {
+    flex: 1;
+    margin: 0 10px;
+    background: #9b59b6;
+    border: none;
+    outline: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 700;
+    padding: 15px 5px;
+    cursor: pointer;
+    box-shadow: 0 6px #8e44ad;
+    transition: background 0.3s ease, transform 0.15s ease;
+    user-select: none;
+  }
+  button.choice-btn:hover,
+  button.choice-btn:focus {
+    background: #8e44ad;
+  }
+  button.choice-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px #8e44ad;
+  }
+  .choice-btn.snake {
+    background: #27ae60;
+    box-shadow: 0 6px #219150;
+  }
+  .choice-btn.snake:hover,
+  .choice-btn.snake:focus {
+    background: #219150;
+  }
+  .choice-btn.snake:active {
+    box-shadow: 0 2px #219150;
+  }
+  .choice-btn.water {
+    background: #2980b9;
+    box-shadow: 0 6px #2471a3;
+  }
+  .choice-btn.water:hover,
+  .choice-btn.water:focus {
+    background: #2471a3;
+  }
+  .choice-btn.water:active {
+    box-shadow: 0 2px #2471a3;
+  }
+  .choice-btn.gun {
+    background: #e67e22;
+    box-shadow: 0 6px #cc6e17;
+  }
+  .choice-btn.gun:hover,
+  .choice-btn.gun:focus {
+    background: #cc6e17;
+  }
+  .choice-btn.gun:active {
+    box-shadow: 0 2px #cc6e17;
+  }
+  .display-sections {
+    text-align: center;
+    margin-top: 15px;
+  }
+  #computer-choice {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #34495e;
+    text-transform: capitalize;
+    min-height: 1.5em;
+    margin-bottom: 12px;
+  }
+  #result-message {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    min-height: 2em;
+  }
+  #result-message.win {
+    color: #27ae60;
+    text-shadow: 0 0 8px #27ae60aa;
+  }
+  #result-message.lose {
+    color: #c0392b;
+    text-shadow: 0 0 8px #c0392baa;
+  }
+  #result-message.draw {
+    color: #7f8c8d;
+  }
+  #scoreboard {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    background: #ecf0f1;
+    border-radius: 10px;
+    padding: 12px;
+    box-shadow: inset 0 0 8px #bdc3c7;
+    user-select: none;
+  }
+  footer {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: #95a5a6;
+  }
+
+  /* Responsive adjustments */
+  @media (max-height: 600px) {
+    #game-container {
+      height: 100vh;
+      border-radius: 0;
+      padding: 10px 15px;
+    }
+  }
+</style>
+</head>
+<body>
+<div id="game-container" role="main" aria-labelledby="game-title">
+  <header>
+    <h1 id="game-title">Snake Water Gun</h1>
+    <p>Pick your choice and try to beat the computer!</p>
+  </header>
+  <main>
+    <div class="choices" role="radiogroup" aria-label="Choose Snake, Water or Gun">
+      <button class="choice-btn snake" data-choice="snake" aria-pressed="false" role="radio" tabindex="0">🐍 Snake</button>
+      <button class="choice-btn water" data-choice="water" aria-pressed="false" role="radio" tabindex="-1">💧 Water</button>
+      <button class="choice-btn gun" data-choice="gun" aria-pressed="false" role="radio" tabindex="-1">🔫 Gun</button>
+    </div>
+    <section class="display-sections" aria-live="polite" aria-atomic="true">
+      <div id="computer-choice" aria-label="Computer choice"></div>
+      <div id="result-message"></div>
+      <div id="scoreboard" aria-label="Scoreboard">You: 0 | Computer: 0</div>
+    </section>
+  </main>
+  <footer>
+    &copy; 2024 Snake Water Gun Game
+  </footer>
+</div>
+
+<script>
+  (function(){
+    const choices = ['snake', 'water', 'gun'];
+    const buttons = document.querySelectorAll('.choice-btn');
+    const computerChoiceEl = document.getElementById('computer-choice');
+    const resultMessageEl = document.getElementById('result-message');
+    const scoreboardEl = document.getElementById('scoreboard');
+
+    let userScore = 0;
+    let computerScore = 0;
+
+    function gameResult(userChoice, computerChoice){
+      if(userChoice === computerChoice) return 'draw';
+
+      // snake wins over water
+      // water wins over gun
+      // gun wins over snake
+      if(
+         (userChoice === 'snake' && computerChoice === 'water') ||
+         (userChoice === 'water' && computerChoice === 'gun') ||
+         (userChoice === 'gun' && computerChoice === 'snake')
+      ) {
+        return 'win';
+      } else {
+        return 'lose';
+      }
+    }
+
+    function updateAriaPressed(clicked){
+      buttons.forEach(btn => {
+        btn.setAttribute('aria-pressed', btn === clicked ? 'true' : 'false');
+        btn.tabIndex = btn === clicked ? 0 : -1;
+      });
+    }
+
+    function capitalize(str){
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    function playRound(userChoice){
+      const computerChoice = choices[Math.floor(Math.random()*choices.length)];
+      computerChoiceEl.textContent = "Computer chose: " + capitalize(computerChoice);
+      computerChoiceEl.style.color = '#34495e';
+
+      const result = gameResult(userChoice, computerChoice);
+
+      if(result === 'win'){
+        resultMessageEl.textContent = "You win this round!";
+        resultMessageEl.className = 'win';
+        userScore++;
+      } else if(result === 'lose'){
+        resultMessageEl.textContent = "Computer wins this round!";
+        resultMessageEl.className = 'lose';
+        computerScore++;
+      } else {
+        resultMessageEl.textContent = "It's a draw!";
+        resultMessageEl.className = 'draw';
+      }
+      scoreboardEl.textContent = `You: ${userScore} | Computer: ${computerScore}`;
+    }
+
+    buttons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        const userChoice = e.currentTarget.getAttribute('data-choice');
+        updateAriaPressed(e.currentTarget);
+        playRound(userChoice);
+      });
+      button.addEventListener('keydown', e => {
+        // Keyboard navigation for radio like behavior
+        let index = Array.from(buttons).indexOf(e.currentTarget);
+        if(e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          let nextIndex = (index + 1) % buttons.length;
+          buttons[nextIndex].focus();
+        } else if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          let prevIndex = (index - 1 + buttons.length) % buttons.length;
+          buttons[prevIndex].focus();
+        } else if(e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          const userChoice = e.currentTarget.getAttribute('data-choice');
+          updateAriaPressed(e.currentTarget);
+          playRound(userChoice);
+        }
+      });
+    });
+
+    // Initial aria pressed set for first button for accessibility
+    buttons[0].setAttribute('aria-pressed', 'true');
+  })();
+</script>
+</body>
+</html>
+
